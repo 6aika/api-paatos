@@ -1,0 +1,933 @@
+swagger: '2.0'
+
+info:
+  title: Open Decisions API
+  description: API for distributing data about decisions and people behind those decisions
+  termsOfService: (depends on authority providing the data)
+  version: 0.0.5
+
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+
+schemes:
+  - http
+  
+produces:
+  - application/json
+
+parameters:
+  page_param:
+    name: page
+    in: query
+    description: request particular page in paginated results
+    required: false
+    type: integer
+  pagesize_param:
+    name: page_size
+    in: query
+    description: request that server delivers page_size results in response
+    required: false
+    type: integer
+  include_param:
+    name: include
+    in: query
+    type: array
+    items:
+      type: string
+    description: Embed given reference-type fields directly into the response, otherwise they are returned as URI references.
+
+definitions:
+  Meta:
+    type: object
+    title: Pagination control
+    description: Meta structure for controlling pagination
+    properties:
+      previous:
+        type: string
+        description: Uri of the previous page relative to the current page settings.
+      total_count:
+        type: integer
+        description: Total items count for the all collection
+      offset:
+        type: integer
+        description: Specify the offset to start displaying element on a page.
+      limit:
+        type: integer
+        description: Specify the number of element to display per page.
+      next:
+        type: string
+        description: Uri of the next page relative to the current page settings.
+
+  case:
+    type: object
+    title: 'High level matter to be decided ("Asia")'
+    description: 'A matter being decided withing the organization. These are often considered across multiple meetings and possibly across multiple decision makers. Cases can also be related to other cases, forming more complex structures. All that said, it is not unusual for a case to involve only a single action. Previous version used *issue* as similar concept, without interlinking.'
+    properties:
+      title:
+        type: object
+        description: 'Descriptive compact title for this case'
+        properties:
+          fi:
+            type: string
+            description: Finnish title
+          sv:
+            type: string
+            description: Swedish title
+      formal_title:
+        type: object
+        description: 'Formal title for this case. This can be longer and more detailed.'
+        properties:
+          fi:
+            type: string
+            description: Finnish title
+          sv:
+            type: string
+            description: Swedish title
+      summary:
+        type: object
+        description: Summary of this case. Typically a few sentences.
+        properties:
+          fi:
+            type: string
+            description: Finnish summary
+          sv:
+            type: string
+            description: Swedish summary
+      category:
+        type: string
+        description: 'Category this case belongs to ("tehtäväluokka")'
+      geometry:
+        type: string
+        format: geojson
+        description: 'Geographical point or area for this case.'
+      district:
+        type: string
+        description: 'Name of district (if any), that this issue is related to.'
+      category_id:
+        type: string
+        description: 'Identifier code for the category, if applicable. In finland this could be the national "Tehtäväluokitus"'
+      related_cases:
+        description: Other cases that are related to this case
+        type: array
+        items:
+          type: object
+          properties:
+            case:
+              $ref: '#/definitions/case'
+            relation_type:
+              type: string
+              description: Type of this relation (previous, similar etc.)
+      # This needs to be rethought, if this field is to link to another data structure.
+      # In that case the result must be of single type (not person or organization)
+      originator:
+        description: Person or organization the proposed this case to the city
+        type: string
+      creation_date:
+        description: Date this case was entered into system
+        type: string
+        format: date-time
+      # Non-public cases might be shown, but with all fields blanked
+      public:
+        description: Is this case public?
+        type: boolean
+        
+  action:
+    type: object
+    title: An action taken by a decision maker.
+    description: 'An action taken by a decision maker. Except for formalities (like quorum), these always involve a case and a decision by an organization or post, even if only postponing the decision. For decision making bodies, actions are always taken in context of a meeting. For officials, some cities also publish their decisions as being done in a meeting, although there is only one person present.'
+    properties: 
+      id:
+        description: Unique identifier for this action
+        type: string
+        format: semantic-iri
+      title:
+        description: Title of the action
+        type: string
+      responsible_party:
+        description: The city organization responsible for this decision. If decision is delegated, this is the organization that delegated the authority.
+        $ref: '#/definitions/Organization'
+      delegate_post:
+        description: If this decision was delegated, this field will be filled and refers to the post that made the decision
+        $ref: '#/definitions/Post'
+      content:
+        $ref: '#/definitions/content'
+      votes:
+        description: Votes taken during this action.
+        type: array
+        items:
+          $ref: '#/definitions/Vote_event'
+
+  # this is derived from Popolo, converted to YAML and JSON Schema draft-04
+  # Event is to be used for meetings and also votes within actions
+  Event:
+    title: Event
+    description: An occurrence that people may attend
+    type: object
+    properties:
+      id:
+        description: The event's unique identifier
+        type:
+        - string
+      name:
+        description: The event's name
+        type:
+        - string
+      description:
+        description: The event's description
+        type:
+        - string
+      start_date:
+        description: The time at which the event starts
+        type:
+        - string
+        pattern: "^[0-9]{4}((-[0-9]{2}){0,2}|(-[0-9]{2}){2}(T[0-9]{2}(:[0-9]{2}(:[0-9]{2})?)?Z)?)$"
+      end_date:
+        description: The time at which the event ends
+        type:
+        - string
+        pattern: "^[0-9]{4}((-[0-9]{2}){0,2}|(-[0-9]{2}){2}(T[0-9]{2}(:[0-9]{2}(:[0-9]{2})?)?Z)?)$"
+      location:
+        description: The event's location
+        type:
+        - string
+      status:
+        description: The event's status
+        type:
+        - string
+# (6Aika note: not used)
+#      identifiers:
+#        description: Issued identifiers
+#        type: array
+#        items:
+#          $ref: '#/definitions/identifier'
+      classification:
+        description: The event's category
+        type:
+        - string
+      organization_id:
+        description: The ID of the organization organizing the event
+        type:
+        - string
+      organization:
+        description: The organization organizing the event
+        $ref: '#/definitions/Organization'
+      attendees:
+        description: People attending the event
+        type: array
+        items:
+          $ref: '#/definitions/Person'
+      parent_id:
+        description: The ID of an event that this event is a part of
+        type:
+        - string
+# (6Aika note: event parents and children not used)
+#      parent:
+#        description: An event that this event is a part of
+#        $ref: '#/definitions/Event'
+#      children:
+#        description: The sub-events of the event
+#        type: array
+#        items:
+#          $ref: '#/definitions/Event'
+      created_at:
+        description: The time at which the resource was created
+        type:
+        - string
+        format: date-time
+      updated_at:
+        description: The time at which the resource was last modified
+        type:
+        - string
+        format: date-time
+#      sources:
+#        description: URLs to documents from which the resource is derived
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+
+  # this is derived from Popolo, converted to YAML and JSON Schema draft-04
+  Vote_event:
+    title: Vote event
+    description: An event at which people's votes are recorded
+    type: object
+    properties:
+      id:
+        description: The vote event's unique identifier
+        type:
+        - string
+      organization_id:
+        description: The ID of the organization whose members are voting
+        type:
+        - string
+      organization:
+        description: The organization whose members are voting
+        $ref: '#/definitions/Organization'
+      legislative_session:
+        description: IRI reference to the Event (meeting) where this vote took place
+        $ref: '#/definitions/Event'
+      identifier:
+        description: An issued identifier
+        type:
+        - string
+      action:
+        description: The action to which this vote_event applies.
+        $ref: '#/definitions/action'
+      start_date:
+        description: The time at which the event begins
+        type:
+        - string
+        format: date-time
+      end_date:
+        description: The time at which the event ends
+        type:
+        - string
+        format: date-time
+      result:
+        description: The result of the vote event. 
+        type:
+        - string
+#      group_results:
+#        description: '(6Aika note: this might not useful. Remove?) The result of the vote event within groups of voters.'
+#        type: array
+#        items:
+#          $ref: '#/definitions/group_result'
+      counts:
+        description: The number of votes for options
+        type: array
+        items:
+          $ref: '#/definitions/Vote_count'
+# (6Aika note: leaving out for first edition)
+#      votes:
+#        description: Voters' votes
+#        type: array
+#        items:
+#          $ref: '#/definitions/Vote'
+      created_at:
+        description: The time at which the resource was created
+        type:
+        - string
+        format: date-time
+      updated_at:
+        description: The time at which the resource was last modified
+        type:
+        - string
+        format: date-time
+# (6Aika note: are these necessary?)
+#     sources:
+#        description: URLs to documents from which the resource is derived
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+
+  Vote_count:
+    title: Count
+    description: The number of votes for an option in a vote event
+    type: object
+    required:
+    - option
+    - value
+    properties:
+      option:
+        description: An option in a vote event
+        type: string
+      value:
+        description: The number of votes for an option
+        type: integer
+      group_id:
+        description: The ID of a group of voters
+        type:
+        - string
+      group:
+        description: A group of voters
+        type:
+        - object
+
+  # this is derived from Popolo, converted to YAML and JSON Schema draft-04
+  Organization:
+    title: Organization
+    description: A group with a common purpose or reason for existence that goes beyond the set of people belonging to it
+    type: object
+    properties:
+      id:
+        description: The organization's unique identifier
+        type:
+        - string
+      name:
+        description: A primary name, e.g. a legally recognized name
+        type:
+        - string
+# (6Aika note: superfluous finnish cities)
+#      other_names:
+#        description: Alternate or former names
+#        type: array
+#        items:
+#          $ref: '#/definitions/other_name'
+#      identifiers:
+#        description: Issued identifiers
+#        type: array
+#        items:
+#          $ref: '#/definitions/identifier'
+      classification:
+        description: An organization category, e.g. committee
+        type:
+        - string
+      parent_id:
+        description: The ID of the organization that contains this organization
+        type:
+        - string
+      parent:
+        description: The organization that contains this organization
+        $ref: '#/definitions/Organization'
+      area_id:
+        description: The ID of the geographic area to which this organization is related
+        type:
+        - string
+      area:
+        description: The geographic area to which this organization is related
+        $ref: '#/definitions/area'
+      abstract:
+        description: A one-line description of an organization
+        type:
+        - string
+      description:
+        description: An extended description of an organization
+        type:
+        - string
+      founding_date:
+        description: A date of founding
+        type:
+        - string
+        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+      dissolution_date:
+        description: A date of dissolution
+        type:
+        - string
+        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+      image:
+        description: A URL of an image
+        type:
+        - string
+        format: uri
+# (6Aika note: removed contact details for now)
+#      contact_details:
+#        description: Means of contacting the organization
+#        type: array
+#        items:
+#          $ref: '#/definitions/contact_detail'
+# (6Aika note: removed links for now)
+#      links:
+#        description: URLs to documents about the organization
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+      memberships:
+        description: The memberships of the members of the organization and of the organization itself
+        type: array
+        items:
+          $ref: '#/definitions/Membership'
+      posts:
+        description: Posts within the organization
+        type: array
+        items:
+          $ref: '#/definitions/Post'
+# (6Aika note: motions are not included)
+#      motions:
+#        description: Motions within the organization
+#        type: array
+#        items:
+#          $ref: '#/definitions/Motion'
+      vote_events:
+        description: Vote events in which members of the organization are voting
+        type: array
+        items:
+          $ref: '#/definitions/Vote_event'
+# (6Aika note: individual votes not included yet)
+#      votes:
+#        description: Votes cast by the organization
+#        type: array
+#        items:
+#          $ref: '#/definitions/Vote'
+      children:
+        description: The sub-organizations of the organization
+        type: array
+        items:
+          $ref: '#/definitions/Organization'
+      created_at:
+        description: The time at which the resource was created
+        type:
+        - string
+        format: date-time
+      updated_at:
+        description: The time at which the resource was last modified
+        type:
+        - string
+        format: date-time
+# (6Aika note: no use case identified)
+#      sources:
+#        description: URLs to documents from which the resource is derived
+#        type: array
+#        items:
+#          "$ref": '#/definitions/link'
+
+  # this is derived from Popolo, converted to YAML and JSON Schema draft-04
+  Membership:
+    title: Membership
+    description: A relationship between a member and an organization
+    type: object
+    properties:
+      id:
+        description: The membership's unique identifier
+        type:
+        - string
+      label:
+        description: A label describing the membership
+        type:
+        - string
+      role:
+        description: The role that the member fulfills in the organization
+        type:
+        - string
+      member:
+        description: The person or organization that is a member of the organization
+        type:
+        - object
+      person_id:
+        description: The ID of the person who is a member of the organization
+        type:
+        - string
+      person:
+        description: The person who is a member of the organization
+        $ref: '#/definitions/Person'
+# (6Aika note: not used)
+#      organization_id:
+#        description: The ID of the organization in which the person or organization is a member
+#        type:
+#        - string
+      organization:
+        description: The organization in which the person or organization is a member
+        $ref: '#/definitions/Organization'
+      post_id:
+        description: The ID of the post held by the member in the organization through this membership
+        type:
+        - string
+      post:
+        description: The post held by the member in the organization through this membership
+        $ref: '#/definitions/Post'
+# (6Aika note: not used)
+#      on_behalf_of_id:
+#        description: The ID of the organization on whose behalf the person is a member of the organization
+#        type:
+#        - string
+      on_behalf_of:
+        description: The organization on whose behalf the person is a member of the organization
+        $ref: '#/definitions/Organization'
+      area_id:
+        description: The ID of the geographic area to which this membership is related
+        type:
+        - string
+# (6Aika note: not needed for cities?)
+#      area:
+#        description: The geographic area to which this membership is related
+#        $ref: '#/definitions/area'
+      start_date:
+        description: The date on which the relationship began
+        type:
+        - string
+        pattern: "^[0-9]{4}((-[0-9]{2}){0,2}|(-[0-9]{2}){2}(T[0-9]{2}(:[0-9]{2}(:[0-9]{2})?)?Z)?)$"
+      end_date:
+        description: The date on which the relationship ended
+        type:
+        - string
+        pattern: "^[0-9]{4}((-[0-9]{2}){0,2}|(-[0-9]{2}){2}(T[0-9]{2}(:[0-9]{2}(:[0-9]{2})?)?Z)?)$"
+# (6Aika note: left out for this version)
+#      contact_details:
+#        description: Means of contacting the member of the organization
+#        type: array
+#        items:
+#          $ref: '#/definitions/contact_detail'
+# (6aika note: left out for this version)
+#      links:
+#        description: URLs to documents about the membership
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+      created_at:
+        description: The time at which the resource was created
+        type:
+        - string
+        format: date-time
+      updated_at:
+        description: The time at which the resource was last modified
+        type:
+        - string
+        format: date-time
+# (&aika note: left out for this version)
+#      sources:
+#        description: URLs to documents from which the resource is derived
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+
+  # this is derived from Popolo, converted to YAML and JSON Schema draft-04
+  Person:
+    title: Person
+    description: A real person, alive or dead
+    type: object
+    properties:
+      id:
+        description: The person's unique identifier
+        type: string
+      name:
+        description: A person's preferred full name
+        type: string
+# (6Aika note: not used)
+#      other_names:
+#        description: Alternate or former names
+#        type: array
+#        items:
+#          $ref: '#/definitions/other_name'
+# (6Aika note: not used)
+#      identifiers:
+#        description: Issued identifiers
+#        type: array
+#        items:
+#          $ref: '#/definitions/identifier'
+      family_name:
+        description: One or more family names
+        type: string
+      given_name:
+        description: One or more primary given names
+        type: string
+      additional_name:
+        description: One or more secondary given names
+        type: string
+      honorific_prefix:
+        description: One or more honorifics preceding a person's name
+        type: string
+      honorific_suffix:
+        description: One or more honorifics following a person's name
+        type: string
+      patronymic_name:
+        description: One or more patronymic names
+        type: string
+      sort_name:
+        description: A name to use in a lexicographically ordered list
+        type: string
+      email:
+        description: A preferred email address
+        type: string
+        format: email
+      gender:
+        description: A gender
+        type: string
+      birth_date:
+        description: A date of birth
+        type: string
+        format: date
+        # FIXME (is this redundant)
+        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+      death_date:
+        description: A date of death
+        type: string
+        format: date
+        # FIXME (is this redundant)
+        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+      image:
+        description: A URL of a head shot
+        type: string
+        format: uri
+      summary:
+        description: A one-line account of a person's life
+        type: string
+      biography:
+        description: An extended account of a person's life
+        type: string
+      national_identity:
+        description: A national identity
+        type: string
+# (6Aika note: not used)
+#      contact_details:
+#        description: Means of contacting the person
+#        type: array
+#        items:
+#          $ref: '#/definitions/contact_detail'
+# (6Aika note: not used)
+#      links:
+#        description: URLs to documents about the person
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+      memberships:
+        description: The person's memberships
+        type: array
+        items:
+          $ref: '#/definitions/Membership'
+# (6Aika note: motion structure is not used)
+#      motions:
+#        description: The person's motions
+#        type: array
+#        items:
+#          $ref: '#/definitions/Motion'
+# (6Aika note: coming later)
+#      speeches:
+#        description: The person's speeches
+#        type: array
+#        items:
+#          $ref: '#/definitions/speech'
+# (6Aika note: coming later)
+#      votes:
+#        description: Votes cast by the person
+#        type: array
+#        items:
+#          $ref: '#/definitions/Vote'
+      created_at:
+        description: The time at which the resource was created
+        type: string
+        format: date-time
+      updated_at:
+        description: The time at which the resource was last modified
+        type: string
+        format: date-time
+# (6Aika note: not used)
+#      sources:
+#        description: URLs to documents from which the resource is derived
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+
+
+  Post:
+    title: Post
+    description: A position that exists independent of the person holding it
+    type: object
+    properties:
+      id:
+        description: The post's unique identifier
+        type:
+        - string
+      label:
+        description: A label describing the post
+        type:
+        - string
+      other_label:
+        description: An alternate label
+        type: array
+        items:
+          type: string
+      role:
+        description: The function that the holder of the post fulfills
+        type:
+        - string
+# (6Aika note: id is not used, only reference)
+#      organization_id:
+#        description: The ID of the organization in which the post is held
+#        type:
+#        - string
+      organization:
+        description: The organization in which the post is held
+        $ref: '#/definitions/Organization'
+      area_id:
+        description: The ID of the geographic area to which this post is related
+        type:
+        - string
+# (6Aika note: needs checking if the are posts with areas)
+#      area:
+#        description: The geographic area to which this post is related
+#        $ref: '#/definitions/area'
+      start_date:
+        description: The date on which the post was created
+        type:
+        - string
+        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+      end_date:
+        description: The date on which the post was eliminated
+        type:
+        - string
+        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+# (6Aika note: not used for now)
+#      contact_details:
+#        description: Means of contacting the holder of the post
+#        type: array
+#        items:
+#          $ref: '#/definitions/contact_detail'
+# (6Aika note: not used for now)
+#      links:
+#        description: URLs to documents about the post
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+      memberships:
+        description: The memberships through which people hold the post in the organization
+        type: array
+        items:
+          $ref: '#/definitions/Membership'
+      created_at:
+        description: The time at which the resource was created
+        type:
+        - string
+        format: date-time
+      updated_at:
+        description: The time at which the resource was last modified
+        type:
+        - string
+        format: date-time
+# (6Aika note: not used for now)
+#      sources:
+#        description: URLs to documents from which the resource is derived
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+
+  # this is derived from Popolo, converted to YAML and JSON Schema draft-04
+  area:
+    title: Area
+    description: A geographic area whose geometry may change over time
+    type: object
+    properties:
+      id:
+        description: The area's unique identifier
+        type:
+        - string
+      name:
+        description: A primary name
+        type:
+        - string
+      identifier:
+        description: An issued identifier
+        type:
+        - string
+      classification:
+        description: An area category, e.g. city
+        type:
+        - string
+      parent_id:
+        description: The ID of the area that contains this area
+        type:
+        - string
+      parent:
+        description: The area that contains this area
+        $ref: '#/definitions/area'
+      geometry:
+        description: A geometry
+        type:
+        - object
+      memberships:
+        description: The memberships to which this area is related
+        type: array
+        items:
+          $ref: '#/definitions/Membership'
+      organizations:
+        description: The organizations to which this area is related
+        type: array
+        items:
+          $ref: '#/definitions/Organization'
+      posts:
+        description: The posts to which this area is related
+        type: array
+        items:
+          $ref: '#/definitions/Post'
+      children:
+        description: The sub-areas of the area
+        type: array
+        items:
+          $ref: '#/definitions/area'
+      created_at:
+        description: The time at which the resource was created
+        type:
+        - string
+        format: date-time
+      updated_at:
+        description: The time at which the resource was last modified
+        type:
+        - string
+        format: date-time
+# (6Aika note: not used for now)
+#      sources:
+#        description: URLs to documents from which the resource is derived
+#        type: array
+#        items:
+#          $ref: '#/definitions/link'
+
+  content:
+    type: object
+    title: Text contents for actions and cases
+    description: Content objects contain the text describing actions takens on cases and the cases themselves. They consist of metadata and the actual case as HTML-formatted text.
+    properties:
+      id:
+        description: Unique identifier for this piece of content. Formatted as IRI, composed of semantic namespace prefix and the identifier itself at end.
+        type: string
+        format: semantic-iri
+      hypertext:
+        type: object
+        description: 'Content formatted with pseudo-HTML. Only a very restricted set of tags is allowed. These are: first and second level headings (H1+H2), strong (STRONG) and emphasis (EM). (more may be added, but start from a minimal set)'
+        properties:
+          fi:
+            type: string
+            format: html
+            description: Finnish version of the hypertext
+          sv:
+            type: string
+            format: html
+            description: Swedish version of the hypertext
+          en:
+            type: string
+            format: html
+            description: English version of the hypertext
+            
+  attachment:
+    type: object
+    title: File attachment related to an action or a case
+    description: Both actions and cases can have related attachments. Usually, the attachments are accumulated in the case and also referenced in the action that attached them to the case.
+    properties:
+      id:
+        description: Unique identifier for this attachment. Formatted as IRI, composed of semantic namespace prefix and the identifier itself at end.
+        type: string
+        format: semantic-iri
+      file:
+        description: URL pointing the attached file
+        type: string
+        format: url
+        
+paths:
+  /cases/:
+    x-swagger-router-controller: cases
+    get:
+      summary: Retrieve a list of cases
+      operationId: cases_list
+      responses:
+        200:
+          description: List of cases
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              objects:
+                type: array
+                items:
+                  $ref: '#/definitions/case'
+      parameters:
+      - type: integer
+        in: query
+        required: false
+        name: limit
+        description: Specify the number of element to display per page.
+
+  /cases/{id}/:
+    x-swagger-router-controller: cases
+    get:
+      summary: Retrieve a single video by ID
+      operationId: video_detail
+      responses:
+        200:
+          description: Video record
+      tags:
+      - video
+      parameters:
+      - name: id
+        type: integer
+        in: path
+        required: true
+        description: Primary key of resource
