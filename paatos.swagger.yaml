@@ -918,13 +918,236 @@ paths:
   /cases/{id}/:
     x-swagger-router-controller: cases
     get:
-      summary: Retrieve a single video by ID
+      summary: Retrieve a single case video by ID
       operationId: video_detail
       responses:
         200:
-          description: Video record
+          description: A single case record
+          schema:
+            $ref: '#/definitions/case'
+      tags:
+      - cases
+      parameters:
+      - name: id
+        type: integer
+        in: path
+        required: true
+        description: Primary key of resource
+
+  /actions/:
+    x-swagger-router-controller: actions
+    get:
+      summary: Retrieve a list of actions
+      operationId: cases_list
+      responses:
+        200:
+          description: List of actions
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              objects:
+                type: array
+                items:
+                  $ref: '#/definitions/action'
+      parameters:
+      - type: integer
+        in: query
+        required: false
+        name: limit
+        description: Specify the number of element to display per page.
+
+  /actions/{id}/:
+    x-swagger-router-controller: actions
+    get:
+      summary: Retrieve a single video by ID
+      operationId: A single action record
+      responses:
+        200:
+          description: A single action record
+          schema:
+            $ref: '#/definitions/action'
       tags:
       - video
+      parameters:
+      - name: id
+        type: integer
+        in: path
+        required: true
+        description: Primary key of resource
+
+  /persons/:
+    x-swagger-router-controller: persons
+    get:
+      summary: Retrieve a list of persons
+      operationId: persons_list
+      responses:
+        200:
+          description: List of persons
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              objects:
+                type: array
+                items:
+                  $ref: '#/definitions/Person'
+      parameters:
+      - type: integer
+        in: query
+        required: false
+        name: limit
+        description: Specify the number of element to display per page.
+
+  /persons/{id}/:
+    x-swagger-router-controller: persons
+    get:
+      summary: Retrieve a single person record
+      operationId: persons_retrieve
+      responses:
+        200:
+          description: A single person record
+          schema:
+            $ref: '#/definitions/Person'
+      tags:
+      - video
+      parameters:
+      - name: id
+        type: integer
+        in: path
+        required: true
+        description: Primary key of resource
+
+  /organizations/:
+    x-swagger-router-controller: organizations
+    get:
+      summary: Retrieve a list of organizations
+      operationId: organizations_list
+      responses:
+        200:
+          description: List of organizations
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              objects:
+                type: array
+                items:
+                 $ref: '#/definitions/Organization'
+      tags:
+      - decision_makers
+      parameters:
+      - type: integer
+        in: query
+        required: false
+        name: limit
+        description: Specify the number of element to display per page.
+
+  /organizations/{id}/:
+    x-swagger-router-controller: persons
+    get:
+      summary: Retrieve a single person record
+      operationId: organizations_retrieve
+      responses:
+        200:
+          description: A single person record
+          schema:
+            $ref: '#/definitions/Organization'
+      tags:
+      - decision_makers
+      parameters:
+      - name: id
+        type: integer
+        in: path
+        required: true
+        description: Primary key of resource
+
+  /memberships/:
+    x-swagger-router-controller: memberships
+    get:
+      summary: Retrieve a list of memberships
+      operationId: memberships_list
+      responses:
+        200:
+          description: List of memberships
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              objects:
+                type: array
+                items:
+                 $ref: '#/definitions/Membership'
+      tags:
+      - decision_makers
+      parameters:
+      - type: integer
+        in: query
+        required: false
+        name: limit
+        description: Specify the number of element to display per page.
+
+  /memberships/{id}/:
+    x-swagger-router-controller: memberships
+    get:
+      summary: Retrieve a single membership record
+      operationId: memberships_retrieve
+      responses:
+        200:
+          description: A single membership record
+          schema:
+            $ref: '#/definitions/Membership'
+      tags:
+      - decision_makers
+      parameters:
+      - name: id
+        type: integer
+        in: path
+        required: true
+        description: Primary key of resource
+
+  /posts/:
+    x-swagger-router-controller: posts
+    get:
+      summary: Retrieve a list of posts
+      operationId: posts_list
+      responses:
+        200:
+          description: List of posts
+          schema:
+            type: object
+            properties:
+              meta:
+                $ref: '#/definitions/Meta'
+              objects:
+                type: array
+                items:
+                 $ref: '#/definitions/Post'
+      tags:
+      - decision_makers
+      parameters:
+      - type: integer
+        in: query
+        required: false
+        name: limit
+        description: Specify the number of element to display per page.
+
+  /posts/{id}/:
+    x-swagger-router-controller: posts
+    get:
+      summary: Retrieve a single post record
+      operationId: posts_retrieve
+      responses:
+        200:
+          description: A single post record
+          schema:
+            $ref: '#/definitions/Post'
+      tags:
+      - decision_makers
       parameters:
       - name: id
         type: integer
