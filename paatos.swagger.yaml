@@ -30,13 +30,6 @@ parameters:
     description: request that server delivers page_size results in response
     required: false
     type: integer
-  include_param:
-    name: include
-    in: query
-    type: array
-    items:
-      type: string
-    description: Embed given reference-type fields directly into the response, otherwise they are returned as URI references.
 
 definitions:
   Meta:
@@ -75,16 +68,17 @@ definitions:
           sv:
             type: string
             description: Swedish title
-      formal_title:
-        type: object
-        description: 'Formal title for this case. This can be longer and more detailed.'
-        properties:
-          fi:
-            type: string
-            description: Finnish title
-          sv:
-            type: string
-            description: Swedish title
+        # Format title would be a field for titles that have to follow a form that makes them hard to understand
+        #formal_title:
+        #type: object
+        #description: 'Formal title for this case. This can be longer and more detailed.'
+        #properties:
+        # fi:
+        #   type: string
+        #   description: Finnish title
+        # sv:
+        #   type: string
+        #   description: Swedish title
       summary:
         type: object
         description: Summary of this case. Typically a few sentences.
@@ -95,13 +89,20 @@ definitions:
           sv:
             type: string
             description: Swedish summary
+      attachments:
+        description: Attachments related to this case
+        type: array
+        items:
+          $ref: '#/definitions/attachment'
       category:
         type: string
         description: 'Category this case belongs to ("tehtäväluokka")'
-      geometry:
-        type: string
-        format: geojson
-        description: 'Geographical point or area for this case.'
+      area:
+        description: Geographic areas this case is related to
+        type: array
+        items:
+          $ref: '#/definitions/Area'
+      # It might be possible to express district using Area
       district:
         type: string
         description: 'Name of district (if any), that this issue is related to.'
@@ -145,6 +146,17 @@ definitions:
       title:
         description: Title of the action
         type: string
+      case:
+        description: Case this action is related to
+        $ref: '#/definitions/case'
+      ordering:
+        description: Ordering of this action within a meeting (or possibly arbitrary ordering)
+        type: integer
+      article_number:
+        description: The article number given to this action after decision, will be null before decision
+        type: string
+      proposal_identifier:
+        description: Identifier for this action used inside the meeting minutes. The format will vary between cities.
       responsible_party:
         description: The city organization responsible for this decision. If decision is delegated, this is the organization that delegated the authority.
         $ref: '#/definitions/Organization'
@@ -182,12 +194,12 @@ definitions:
         description: The time at which the event starts
         type:
         - string
-        pattern: "^[0-9]{4}((-[0-9]{2}){0,2}|(-[0-9]{2}){2}(T[0-9]{2}(:[0-9]{2}(:[0-9]{2})?)?Z)?)$"
+        format: date-time
       end_date:
         description: The time at which the event ends
         type:
         - string
-        pattern: "^[0-9]{4}((-[0-9]{2}){0,2}|(-[0-9]{2}){2}(T[0-9]{2}(:[0-9]{2}(:[0-9]{2})?)?Z)?)$"
+        format: data-time
       location:
         description: The event's location
         type:
@@ -380,13 +392,14 @@ definitions:
       parent:
         description: The organization that contains this organization
         $ref: '#/definitions/Organization'
-      area_id:
-        description: The ID of the geographic area to which this organization is related
-        type:
-        - string
+# (6Aika note: ids are not used, references instead)
+#      area_id:
+#        description: The ID of the geographic area to which this organization is related
+#        type:
+#        - string
       area:
         description: The geographic area to which this organization is related
-        $ref: '#/definitions/area'
+        $ref: '#/definitions/Area'
       abstract:
         description: A one-line description of an organization
         type:
@@ -399,12 +412,12 @@ definitions:
         description: A date of founding
         type:
         - string
-        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+        format: date
       dissolution_date:
         description: A date of dissolution
         type:
         - string
-        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+        format: date
       image:
         description: A URL of an image
         type:
@@ -523,24 +536,24 @@ definitions:
       on_behalf_of:
         description: The organization on whose behalf the person is a member of the organization
         $ref: '#/definitions/Organization'
-      area_id:
-        description: The ID of the geographic area to which this membership is related
-        type:
-        - string
-# (6Aika note: not needed for cities?)
+# (6Aika note: not needed for cities?)        
+#      area_id:
+#        description: The ID of the geographic area to which this membership is related
+#        type:
+#        - string
 #      area:
 #        description: The geographic area to which this membership is related
-#        $ref: '#/definitions/area'
+#        $ref: '#/definitions/Area'
       start_date:
         description: The date on which the relationship began
         type:
         - string
-        pattern: "^[0-9]{4}((-[0-9]{2}){0,2}|(-[0-9]{2}){2}(T[0-9]{2}(:[0-9]{2}(:[0-9]{2})?)?Z)?)$"
+        format: date
       end_date:
         description: The date on which the relationship ended
         type:
         - string
-        pattern: "^[0-9]{4}((-[0-9]{2}){0,2}|(-[0-9]{2}){2}(T[0-9]{2}(:[0-9]{2}(:[0-9]{2})?)?Z)?)$"
+        format: date
 # (6Aika note: left out for this version)
 #      contact_details:
 #        description: Means of contacting the member of the organization
@@ -626,14 +639,10 @@ definitions:
         description: A date of birth
         type: string
         format: date
-        # FIXME (is this redundant)
-        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
       death_date:
         description: A date of death
         type: string
         format: date
-        # FIXME (is this redundant)
-        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
       image:
         description: A URL of a head shot
         type: string
@@ -735,17 +744,17 @@ definitions:
 # (6Aika note: needs checking if the are posts with areas)
 #      area:
 #        description: The geographic area to which this post is related
-#        $ref: '#/definitions/area'
+#        $ref: '#/definitions/Area'
       start_date:
         description: The date on which the post was created
         type:
         - string
-        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+        format: date
       end_date:
         description: The date on which the post was eliminated
         type:
         - string
-        pattern: "^[0-9]{4}(-[0-9]{2}){0,2}$"
+        format: date
 # (6Aika note: not used for now)
 #      contact_details:
 #        description: Means of contacting the holder of the post
@@ -781,7 +790,7 @@ definitions:
 #          $ref: '#/definitions/link'
 
   # this is derived from Popolo, converted to YAML and JSON Schema draft-04
-  area:
+  Area:
     title: Area
     description: A geographic area whose geometry may change over time
     type: object
@@ -808,31 +817,34 @@ definitions:
         - string
       parent:
         description: The area that contains this area
-        $ref: '#/definitions/area'
+        $ref: '#/definitions/Area'
       geometry:
         description: A geometry
         type:
         - object
-      memberships:
-        description: The memberships to which this area is related
-        type: array
-        items:
-          $ref: '#/definitions/Membership'
-      organizations:
-        description: The organizations to which this area is related
-        type: array
-        items:
-          $ref: '#/definitions/Organization'
-      posts:
-        description: The posts to which this area is related
-        type: array
-        items:
-          $ref: '#/definitions/Post'
+# (6Aika note: leaving out areas related to memberships for now)
+#      memberships:
+#        description: The memberships to which this area is related
+#        type: array
+#        items:
+#          $ref: '#/definitions/Membership'
+# (6Aika note: same as with memberships, leaving out for now)
+#      organizations:
+#        description: The organizations to which this area is related
+#        type: array
+#        items:
+#          $ref: '#/definitions/Organization'
+# (6Aika note: same as with memberships, although area related posts certainly exist)
+#      posts:
+#        description: The posts to which this area is related
+#        type: array
+#        items:
+#          $ref: '#/definitions/Post'
       children:
         description: The sub-areas of the area
         type: array
         items:
-          $ref: '#/definitions/area'
+          $ref: '#/definitions/Area'
       created_at:
         description: The time at which the resource was created
         type:
@@ -853,15 +865,24 @@ definitions:
   content:
     type: object
     title: Text contents for actions and cases
-    description: Content objects contain the text describing actions takens on cases and the cases themselves. They consist of metadata and the actual case as HTML-formatted text.
+    description: Content objects contain the text describing actions takens on cases and the cases themselves. They consist of metadata and the actual content as HTML-formatted text.
     properties:
       id:
         description: Unique identifier for this piece of content. Formatted as IRI, composed of semantic namespace prefix and the identifier itself at end.
         type: string
         format: semantic-iri
+      ordering:
+        description: Ordering of this content within the larger context
+        type: integer
+      title:
+        description: Title for this content
+        type: string
+      type:
+        description: 'Type of this content (options include: decision, proposal, proceedings...)'
+        type: string
       hypertext:
         type: object
-        description: 'Content formatted with pseudo-HTML. Only a very restricted set of tags is allowed. These are: first and second level headings (H1+H2), strong (STRONG) and emphasis (EM). (more may be added, but start from a minimal set)'
+        description: 'Content formatted with pseudo-HTML. Only a very restricted set of tags is allowed. These are: first and second level headings (P+H1+H2) and table (more may be added, but start from a minimal set)'
         properties:
           fi:
             type: string
@@ -938,7 +959,7 @@ paths:
     x-swagger-router-controller: actions
     get:
       summary: Retrieve a list of actions
-      operationId: cases_list
+      operationId: actions_list
       responses:
         200:
           description: List of actions
@@ -962,7 +983,7 @@ paths:
     x-swagger-router-controller: actions
     get:
       summary: Retrieve a single video by ID
-      operationId: A single action record
+      operationId: actions_retrieve
       responses:
         200:
           description: A single action record
@@ -1130,11 +1151,8 @@ paths:
       tags:
       - decision_makers
       parameters:
-      - type: integer
-        in: query
-        required: false
-        name: limit
-        description: Specify the number of element to display per page.
+      - $ref: '#/parameters/pagesize_param'
+      - $ref: '#/parameters/page_param'
 
   /posts/{id}/:
     x-swagger-router-controller: posts
