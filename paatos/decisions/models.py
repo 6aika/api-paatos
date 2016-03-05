@@ -27,11 +27,19 @@ class Case(models.Model):
 
 
 class Post(models.Model):
-    pass
+    label = models.CharField(max_length=255,
+                             verbose_name=_("Post's label"))
+    organization = models.ForeignKey('Organization')
+
+    def __str__(self):
+        return self.label
 
 
 class Organization(models.Model):
     abstract = models.CharField(max_length=255, verbose_name=_('A one-line description of an organization'))
+
+    def __str__(self):
+        return self.abstract
 
 
 class Action(models.Model):
@@ -54,6 +62,9 @@ class Action(models.Model):
     # Contents for this action refer to this
     # Votes for this action refer here
 
+    def __str__(self):
+        return self.title
+
 
 class Content(models.Model):
     iri = models.CharField(max_length=255, verbose_name=_('IRI for this content'))
@@ -64,6 +75,9 @@ class Content(models.Model):
     hypertext = models.CharField(max_length=255, verbose_name=_(
         'Content formatted with pseudo-HTML. Only a very restricted set of tags is allowed. These are: first and second level headings (P+H1+H2) and table (more may be added, but start from a minimal set)'))
     action = models.ForeignKey('Action', verbose_name=_('Action that this content describes'))
+
+    def __str__(self):
+        return self.title
 
 
 class Attachment(models.Model):
@@ -81,6 +95,9 @@ class Event(models.Model):
     name = models.CharField(max_length=255, verbose_name=_("The event's name"))
     organization = models.ForeignKey(Organization, verbose_name=_('The organization organizing the event'))
     attendees = models.ManyToManyField('Person', verbose_name=_('People attending this event'), through='Attendance')
+
+    def __str__(self):
+        return self.name
 
 
 class Attendance(models.Model):
@@ -106,8 +123,14 @@ class Membership(models.Model):
 
 
 class Person(models.Model):
-    pass
+    name = models.CharField(max_length=255, verbose_name=_("A person's preferred full name"))
+
+    def __str__(self):
+        return self.name
 
 
 class Area(models.Model):
-    pass
+    name = models.CharField(max_length=255, verbose_name=_("Area's name"))
+
+    def __str__(self):
+        return self.name
