@@ -1,13 +1,36 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 class Case(models.Model):
-    pass
+    iri = models.CharField(verbose_name=_('IRI for this case'))
+    title = models.CharField(verbose_name=_('A high level matter to be decided'))
+    description = models.CharField(verbose_name=_('A descriptive compact title for the case'))
+    summary = models.CharField(verbose_name=_('Summary of this case. Typically a few sentences.'))
+    # Attachments Foreignkey to this model
+    category = models.CharField(verbose_name=_('Category this case belongs to ("tehtäväluokka")'))
+    # Areas Foreignkey to this model
+    originator = models.ForeignKey('Person')
+    creation_date = models.DateField()
+    public = models.BooleanField()
 
 class Action(models.Model):
-    pass
+    iri = models.CharField(verbose_name=_('IRI for this action'))
+    title = models.CharField(verbose_name=_('Title for this action'))
+    case = models.ForeignKey(Case, verbose_name=_('Case this action affects'))
+    ordering = models.IntegerField(verbose_name=_('Ordering of this action within a meeting'))
+    article_number = models.CharField(verbose_name=_('The article number given to this action after decision'))
+    proposal_identifier = models.CharField(verbose_name=_('Identifier for this action used inside the meeting minutes. The format will vary between cities.'))
+    responsible_party = models.ForeignKey(Organization, verbose_name=_('The city organization responsible for this decision. If decision is delegated, this is the organization that delegated the authority.'))
+    delegation = models.ForeignKey(Post, verbose_name=_('If this decision was delegated, this field will be filled and refers to the post that made the decision'))
+    # Contents for this action refer to this
+    # Votes for this action refer here
 
 class Content(models.Model):
-    pass
+    iri = models.CharField(verbose_name=_('IRI for this content'))
+    ordering = models.IntegerField(verbose_name=_('Ordering of this content within the larger context (like action)'))
+    title = models.CharField(verbose_name=_('Title of this content'))
+    type = models.CharField(verbose_name=_('Type of this content (options include: decision, proposal, proceedings...)'))
+    hypertext = models.CharField(verbose_name=_('Content formatted with pseudo-HTML. Only a very restricted set of tags is allowed. These are: first and second level headings (P+H1+H2) and table (more may be added, but start from a minimal set)'))
 
 class Attachment(models.Model):
     pass
