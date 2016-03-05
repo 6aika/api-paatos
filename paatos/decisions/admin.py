@@ -3,8 +3,14 @@ from decisions.models import Case, Action
 from decisions.models import Event, Organization, Post, Person, Area
 
 
+class ActionInline(admin.TabularInline):
+    model = Action
+
 class CaseAdmin(admin.ModelAdmin):
     fields = ('iri', 'title', 'description', 'summary', 'category')
+    inlines = [
+        ActionInline,
+    ]
 admin.site.register(Case, CaseAdmin)
 
 admin.site.register(Action)
