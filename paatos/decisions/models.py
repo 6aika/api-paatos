@@ -22,6 +22,9 @@ class Case(models.Model):
     creation_date = models.DateField(blank=True, null=True)
     public = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.title
+
 
 class Post(models.Model):
     pass
