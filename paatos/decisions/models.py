@@ -68,15 +68,16 @@ class Attachment(models.Model):
 
 # "An event is an occurrence that people may attend."
 class Event(models.Model):
-    name = models.CharField(max_length=255, verbose_name=_('The event's name))
+    name = models.CharField(max_length=255, verbose_name=_("The event's name"))
     organization = models.ForeignKey(Organization, verbose_name=_('The organization organizing the event'))
 
 class VoteEvent(models.Model):
     legislative_session = models.ForeignKey(Event, verbose_name=_('The meeting (event) where this vote took place'))
-    vote_count = models.ForeignKey(VoteCount)
+    vote_count = models.ForeignKey('VoteCount')
 
 
 class VoteCount(models.Model):
+
     pass
 
 
