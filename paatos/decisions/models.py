@@ -108,7 +108,6 @@ class Attendance(models.Model):
 
 class VoteEvent(models.Model):
     legislative_session = models.ForeignKey('Event', verbose_name=_('The meeting (event) where this vote took place'))
-    event = models.ForeignKey('Event', verbose_name=_(''))
     vote_count = models.ForeignKey('VoteCount')
 
 
