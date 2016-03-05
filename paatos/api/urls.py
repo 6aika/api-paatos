@@ -6,6 +6,8 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'case', views.CaseViewSet)
+router.register(r'organization', views.OrganizationViewSet)
+router.register(r'action', views.ActionViewSet)
 urlpatterns = router.urls
 
 # urlpatterns = [

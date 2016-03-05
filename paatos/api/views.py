@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
-from decisions.models import Case
-from api.serializers import CaseSerializer
+from decisions.models import Case, Organization, Action
+from api.serializers import CaseSerializer, OrganizationSerializer, ActionSerializer
 from django.http import Http404
 # from rest_framework.views import APIView
 # from rest_framework import exceptions, filters, mixins, serializers, viewsets
@@ -24,3 +24,19 @@ class CaseViewSet(viewsets.ReadOnlyModelViewSet):
             return self.queryset
         else:
             return self.queryset.filter(public=True)
+
+
+class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all Organizations
+    """
+    queryset = Organization.objects.all()
+    serializer_class = OrganizationSerializer
+
+
+class ActionViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List all Actions
+    """
+    queryset = Action.objects.all()
+    serializer_class = ActionSerializer
