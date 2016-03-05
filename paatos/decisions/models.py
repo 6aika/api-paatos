@@ -17,8 +17,8 @@ class Case(models.Model):
     category = models.CharField(max_length=255, blank=True,
                                 verbose_name=_('Category this case belongs to ("tehtäväluokka")'))
     # Areas Foreignkey to this model
-    originator = models.ForeignKey('Person')
-    creation_date = models.DateField(blank=True)
+    originator = models.ForeignKey('Person', null=True)
+    creation_date = models.DateField(blank=True, null=True)
     public = models.BooleanField(default=True)
 
 
