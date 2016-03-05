@@ -13,7 +13,7 @@ class Case(models.Model):
                                    verbose_name=_('A descriptive compact title for the case'))
     summary = models.CharField(max_length=255, blank=True,
                                verbose_name=_('Summary of this case. Typically a few sentences.'))
-    attachments = models.ManyToManyField(Attachment)
+    attachments = models.ManyToManyField('Attachment')
     category = models.CharField(max_length=255, blank=True,
                                 verbose_name=_('Category this case belongs to ("tehtäväluokka")'))
     # Areas Foreignkey to this model
@@ -57,14 +57,14 @@ class Content(models.Model):
 
 class Attachment(models.Model):
     iri = models.CharField(max_length=255, verbose_name=_('IRI for this attachment'))
-    file = models.CharField(verbose_name=_('FIXME: i should refer to a file'))
+    file = models.CharField(max_length=255, verbose_name=_('FIXME: i should refer to a file'))
     # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     # object_id = models.PositiveIntegerField()
     # content_object = GenericForeignKey('content_type', 'object_id')
 
 # Popoloish models begin here
 class Event(models.Model):
-    
+
     pass
 
 
