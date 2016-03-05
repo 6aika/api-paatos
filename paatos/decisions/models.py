@@ -9,7 +9,7 @@ class Case(models.Model):
                            verbose_name=_('IRI for this case'))
     title = models.CharField(max_length=255,
                              verbose_name=_('A high level matter to be decided'))
-    description = models.CharField(max_length=255, §
+    description = models.CharField(max_length=255, blank=True,
                                    verbose_name=_('A descriptive compact title for the case'))
     summary = models.CharField(max_length=255, blank=True,
                                verbose_name=_('Summary of this case. Typically a few sentences.'))
