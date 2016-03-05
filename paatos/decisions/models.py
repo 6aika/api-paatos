@@ -31,14 +31,14 @@ class Post(models.Model):
 
 
 class Organization(models.Model):
-    pass
+    abstract = models.CharField(max_length=255, verbose_name=_('A one-line description of an organization'))
 
 
 class Action(models.Model):
     iri = models.CharField(max_length=255,
                            verbose_name=_('IRI for this action'))
     title = models.CharField(max_length=255,
-                             verbose_name=_('Title for this action'))
+                             verbose_name=_('Descriptive compact title for this case'))
     case = models.ForeignKey(Case, verbose_name=_('Case this action affects'))
     ordering = models.IntegerField(verbose_name=_('Ordering of this action within a meeting'))
     article_number = models.CharField(max_length=255,
@@ -48,7 +48,7 @@ class Action(models.Model):
                                                'Identifier for this action used inside the meeting minutes. The format will vary between cities.'))
     responsible_party = models.ForeignKey(Organization, verbose_name=_(
         'The city organization responsible for this decision. If decision is delegated, this is the organization that delegated the authority.'))
-    delegation = models.ForeignKey(Post, verbose_name=_(
+    delegation = models.ForeignKey(Post, null=True, verbose_name=_(
         'If this decision was delegated, this field will be filled and refers to the post that made the decision'))
     event = models.ForeignKey('Event', verbose_name=_('Event (if any) where this action took place'), null=True)
     # Contents for this action refer to this
