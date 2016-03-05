@@ -41,9 +41,12 @@ class Action(models.Model):
     article_number = models.CharField(max_length=255,
                                       verbose_name=_('The article number given to this action after decision'))
     proposal_identifier = models.CharField(max_length=255,
-                                           verbose_name=_('Identifier for this action used inside the meeting minutes. The format will vary between cities.'))
-    responsible_party = models.ForeignKey(Organization, verbose_name=_('The city organization responsible for this decision. If decision is delegated, this is the organization that delegated the authority.'))
-    delegation = models.ForeignKey(Post, verbose_name=_('If this decision was delegated, this field will be filled and refers to the post that made the decision'))
+                                           verbose_name=_(
+                                               'Identifier for this action used inside the meeting minutes. The format will vary between cities.'))
+    responsible_party = models.ForeignKey(Organization, verbose_name=_(
+        'The city organization responsible for this decision. If decision is delegated, this is the organization that delegated the authority.'))
+    delegation = models.ForeignKey(Post, verbose_name=_(
+        'If this decision was delegated, this field will be filled and refers to the post that made the decision'))
     event = models.ForeignKey('Event', verbose_name=_('Event (if any) where this action took place'), null=True)
     # Contents for this action refer to this
     # Votes for this action refer here
@@ -53,9 +56,12 @@ class Content(models.Model):
     iri = models.CharField(max_length=255, verbose_name=_('IRI for this content'))
     ordering = models.IntegerField(verbose_name=_('Ordering of this content within the larger context (like action)'))
     title = models.CharField(max_length=255, verbose_name=_('Title of this content'))
-    type = models.CharField(max_length=255, verbose_name=_('Type of this content (options include: decision, proposal, proceedings...)'))
-    hypertext = models.CharField(max_length=255, verbose_name=_('Content formatted with pseudo-HTML. Only a very restricted set of tags is allowed. These are: first and second level headings (P+H1+H2) and table (more may be added, but start from a minimal set)'))
+    type = models.CharField(max_length=255, verbose_name=_(
+        'Type of this content (options include: decision, proposal, proceedings...)'))
+    hypertext = models.CharField(max_length=255, verbose_name=_(
+        'Content formatted with pseudo-HTML. Only a very restricted set of tags is allowed. These are: first and second level headings (P+H1+H2) and table (more may be added, but start from a minimal set)'))
     action = models.ForeignKey('Action', verbose_name=_('Action that this content describes'))
+
 
 class Attachment(models.Model):
     iri = models.CharField(max_length=255, verbose_name=_('IRI for this attachment'))
@@ -64,25 +70,36 @@ class Attachment(models.Model):
     # object_id = models.PositiveIntegerField()
     # content_object = GenericForeignKey('content_type', 'object_id')
 
+
 # Popoloish models begin here
 
 # "An event is an occurrence that people may attend."
 class Event(models.Model):
     name = models.CharField(max_length=255, verbose_name=_("The event's name"))
     organization = models.ForeignKey(Organization, verbose_name=_('The organization organizing the event'))
+    attendees = models.ManyToManyField('Person', verbose_name=_('People attending this event'), through='Attendance')
+
+
+class Attendance(models.Model):
+    event = models.ForeignKey('Event')
+    attendee = models.ForeignKey('Person')
+    role = models.CharField(max_length=50, verbose_name=_('Role of the person in the event (chairman, secretary...'))
+
 
 class VoteEvent(models.Model):
-    legislative_session = models.ForeignKey(Event, verbose_name=_('The meeting (event) where this vote took place'))
+    legislative_session = models.ForeignKey('Event', verbose_name=_('The meeting (event) where this vote took place'))
     vote_count = models.ForeignKey('VoteCount')
 
 
 class VoteCount(models.Model):
-
     pass
 
 
 class Membership(models.Model):
-    pass
+    person = models.ForeignKey('Person', verbose_name=_('Person who has membership in organization'))
+    post = models.ForeignKey('Post', verbose_name=_('The post held by the member through this membership'))
+    organization = models.ForeignKey('Organization',
+                                     verbose_name=_('The organization in which the person or organization is a member'))
 
 
 class Person(models.Model):
