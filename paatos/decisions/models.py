@@ -9,16 +9,16 @@ class Case(models.Model):
                            verbose_name=_('IRI for this case'))
     title = models.CharField(max_length=255,
                              verbose_name=_('A high level matter to be decided'))
-    description = models.CharField(max_length=255, required=False,
+    description = models.CharField(max_length=255, §
                                    verbose_name=_('A descriptive compact title for the case'))
-    summary = models.CharField(max_length=255, required=False,
+    summary = models.CharField(max_length=255, blank=True,
                                verbose_name=_('Summary of this case. Typically a few sentences.'))
     attachments = models.ManyToManyField(Attachment)
-    category = models.CharField(max_length=255, required=False,
+    category = models.CharField(max_length=255, blank=True,
                                 verbose_name=_('Category this case belongs to ("tehtäväluokka")'))
     # Areas Foreignkey to this model
     originator = models.ForeignKey('Person')
-    creation_date = models.DateField(required=False)
+    creation_date = models.DateField(blank=True)
     public = models.BooleanField(default=True)
 
 
