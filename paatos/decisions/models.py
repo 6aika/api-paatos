@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -7,17 +9,17 @@ class Case(models.Model):
                            verbose_name=_('IRI for this case'))
     title = models.CharField(max_length=255,
                              verbose_name=_('A high level matter to be decided'))
-    description = models.CharField(max_length=255,
+    description = models.CharField(max_length=255, required=False,
                                    verbose_name=_('A descriptive compact title for the case'))
-    summary = models.CharField(max_length=255,
+    summary = models.CharField(max_length=255, required=False,
                                verbose_name=_('Summary of this case. Typically a few sentences.'))
-    # Attachments Foreignkey to this model
-    category = models.CharField(max_length=255,
+    attachments = models.ManyToManyField(Attachment)
+    category = models.CharField(max_length=255, required=False,
                                 verbose_name=_('Category this case belongs to ("tehtäväluokka")'))
     # Areas Foreignkey to this model
     originator = models.ForeignKey('Person')
-    creation_date = models.DateField()
-    public = models.BooleanField()
+    creation_date = models.DateField(required=False)
+    public = models.BooleanField(default=True)
 
 
 class Post(models.Model):
@@ -54,11 +56,15 @@ class Content(models.Model):
 
 
 class Attachment(models.Model):
-    pass
-
+    iri = models.CharField(max_length=255, verbose_name=_('IRI for this attachment'))
+    file = models.CharField(verbose_name=_('FIXME: i should refer to a file'))
+    # content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    # object_id = models.PositiveIntegerField()
+    # content_object = GenericForeignKey('content_type', 'object_id')
 
 # Popoloish models begin here
 class Event(models.Model):
+    
     pass
 
 
