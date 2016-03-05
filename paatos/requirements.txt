@@ -5,6 +5,7 @@
 #    pip-compile requirements.in
 #
 click==6.3                # via pip-tools
+django-cors-headers==1.1.0
 django==1.9.3
 djangorestframework==3.3.2
 first==2.0.1              # via pip-tools
