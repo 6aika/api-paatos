@@ -16,7 +16,8 @@ class Case(models.Model):
     attachments = models.ManyToManyField('Attachment')
     category = models.CharField(max_length=255, blank=True,
                                 verbose_name=_('Category this case belongs to ("tehtäväluokka")'))
-    # Areas Foreignkey to this model
+    area = models.ForeignKey('Area', null=True,
+                             verbose_name=_('Geographic area this case is related to'))
     originator = models.ForeignKey('Person', null=True)
     creation_date = models.DateField(blank=True, null=True)
     public = models.BooleanField(default=True)
@@ -43,6 +44,7 @@ class Action(models.Model):
                                            verbose_name=_('Identifier for this action used inside the meeting minutes. The format will vary between cities.'))
     responsible_party = models.ForeignKey(Organization, verbose_name=_('The city organization responsible for this decision. If decision is delegated, this is the organization that delegated the authority.'))
     delegation = models.ForeignKey(Post, verbose_name=_('If this decision was delegated, this field will be filled and refers to the post that made the decision'))
+    event = models.ForeignKey('Event', verbose_name=_('Event (if any) where this action took place'), null=True)
     # Contents for this action refer to this
     # Votes for this action refer here
 
@@ -53,7 +55,7 @@ class Content(models.Model):
     title = models.CharField(max_length=255, verbose_name=_('Title of this content'))
     type = models.CharField(max_length=255, verbose_name=_('Type of this content (options include: decision, proposal, proceedings...)'))
     hypertext = models.CharField(max_length=255, verbose_name=_('Content formatted with pseudo-HTML. Only a very restricted set of tags is allowed. These are: first and second level headings (P+H1+H2) and table (more may be added, but start from a minimal set)'))
-
+    action = models.ForeignKey('Action', verbose_name=_('Action that this content describes'))
 
 class Attachment(models.Model):
     iri = models.CharField(max_length=255, verbose_name=_('IRI for this attachment'))
@@ -63,13 +65,15 @@ class Attachment(models.Model):
     # content_object = GenericForeignKey('content_type', 'object_id')
 
 # Popoloish models begin here
+
+# "An event is an occurrence that people may attend."
 class Event(models.Model):
-
-    pass
-
+    name = models.CharField(max_length=255, verbose_name=_('The event's name))
+    organization = models.ForeignKey(Organization, verbose_name=_('The organization organizing the event'))
 
 class VoteEvent(models.Model):
-    pass
+    legislative_session = models.ForeignKey(Event, verbose_name=_('The meeting (event) where this vote took place'))
+    vote_count = models.ForeignKey(VoteCount)
 
 
 class VoteCount(models.Model):
