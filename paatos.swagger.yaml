@@ -929,6 +929,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/case'
+      tags:
+      - cases
       parameters:
       - type: integer
         in: query
@@ -972,6 +974,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/action'
+      tags:
+      - cases
       parameters:
       - type: integer
         in: query
@@ -990,7 +994,7 @@ paths:
           schema:
             $ref: '#/definitions/action'
       tags:
-      - video
+      - cases
       parameters:
       - name: id
         type: integer
@@ -1015,6 +1019,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Person'
+      tags:
+      - decision_makers
       parameters:
       - type: integer
         in: query
@@ -1033,7 +1039,7 @@ paths:
           schema:
             $ref: '#/definitions/Person'
       tags:
-      - video
+      - decision_makers
       parameters:
       - name: id
         type: integer
