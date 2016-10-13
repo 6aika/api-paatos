@@ -27,4 +27,5 @@ The Six Cities are committed to further develop this definition in cooperation o
 
 ![Paatos graph screenshot](paatos-graph.png?raw=true)
 
+NOTE: the graph above doesn't match anymore current implementation's data model.
 
