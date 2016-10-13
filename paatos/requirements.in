@@ -1,5 +1,0 @@
-pip-tools
-django<1.10
-djangorestframework<3.4
-django-cors-headers
-
