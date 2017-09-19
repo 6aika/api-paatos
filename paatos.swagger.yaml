@@ -873,6 +873,11 @@ paths:
         required: false
         name: limit
         description: Specify the number of element to display per page.
+      - type: integer
+        in: query
+        required: false
+        name: offset
+        description: Specify the offset to start displaying element on a page.
 
   /case/{id}/:
     x-swagger-router-controller: cases
@@ -918,7 +923,12 @@ paths:
         required: false
         name: limit
         description: Specify the number of element to display per page.
-
+      - type: integer
+        in: query
+        required: false
+        name: offset
+        description: Specify the offset to start displaying element on a page.
+        
   /action/{id}/:
     x-swagger-router-controller: actions
     get:
@@ -1008,7 +1018,11 @@ paths:
         required: false
         name: limit
         description: Specify the number of element to display per page.
-
+      - type: integer
+        in: query
+        required: false
+        name: offset
+        description: Specify the offset to start displaying element on a page.
   /organization/{id}/:
     x-swagger-router-controller: persons
     get:
