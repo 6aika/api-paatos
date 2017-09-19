@@ -180,34 +180,27 @@ definitions:
     properties:
       id:
         description: The event's unique identifier
-        type:
-        - string
+        type: string
       name:
         description: The event's name
-        type:
-        - string
+        type: string
       description:
         description: The event's description
-        type:
-        - string
+        type: string
       start_date:
         description: The time at which the event starts
-        type:
-        - string
+        type: string
         format: date-time
       end_date:
         description: The time at which the event ends
-        type:
-        - string
+        type: string
         format: data-time
       location:
         description: The event's location
-        type:
-        - string
+        type: string
       status:
         description: The event's status
-        type:
-        - string
+        type: string
 # (6Aika note: not used)
 #      identifiers:
 #        description: Issued identifiers
@@ -216,12 +209,10 @@ definitions:
 #          $ref: '#/definitions/identifier'
       classification:
         description: The event's category
-        type:
-        - string
+        type: string
       organization_id:
         description: The ID of the organization organizing the event
-        type:
-        - string
+        type: string
       organization:
         description: The organization organizing the event
         $ref: '#/definitions/Organization'
@@ -232,8 +223,7 @@ definitions:
           $ref: '#/definitions/Person'
       parent_id:
         description: The ID of an event that this event is a part of
-        type:
-        - string
+        type: string
 # (6Aika note: event parents and children not used)
 #      parent:
 #        description: An event that this event is a part of
@@ -245,13 +235,11 @@ definitions:
 #          $ref: '#/definitions/Event'
       created_at:
         description: The time at which the resource was created
-        type:
-        - string
+        type: string
         format: date-time
       updated_at:
         description: The time at which the resource was last modified
-        type:
-        - string
+        type: string
         format: date-time
 #      sources:
 #        description: URLs to documents from which the resource is derived
@@ -267,12 +255,10 @@ definitions:
     properties:
       id:
         description: The vote event's unique identifier
-        type:
-        - string
+        type: string
       organization_id:
         description: The ID of the organization whose members are voting
-        type:
-        - string
+        type: string
       organization:
         description: The organization whose members are voting
         $ref: '#/definitions/Organization'
@@ -281,25 +267,21 @@ definitions:
         $ref: '#/definitions/Event'
       identifier:
         description: An issued identifier
-        type:
-        - string
+        type: string
       action:
         description: The action to which this vote_event applies.
         $ref: '#/definitions/action'
       start_date:
         description: The time at which the event begins
-        type:
-        - string
+        type: string
         format: date-time
       end_date:
         description: The time at which the event ends
-        type:
-        - string
+        type: string
         format: date-time
       result:
         description: The result of the vote event. 
-        type:
-        - string
+        type: string
 #      group_results:
 #        description: '(6Aika note: this might not useful. Remove?) The result of the vote event within groups of voters.'
 #        type: array
@@ -318,13 +300,11 @@ definitions:
 #          $ref: '#/definitions/Vote'
       created_at:
         description: The time at which the resource was created
-        type:
-        - string
+        type: string
         format: date-time
       updated_at:
         description: The time at which the resource was last modified
-        type:
-        - string
+        type: string
         format: date-time
 # (6Aika note: are these necessary?)
 #     sources:
@@ -349,8 +329,7 @@ definitions:
         type: integer
       group_id:
         description: The ID of a group of voters
-        type:
-        - string
+        type: string
       group:
         description: A group of voters
         type:
@@ -364,12 +343,10 @@ definitions:
     properties:
       id:
         description: The organization's unique identifier
-        type:
-        - string
+        type: string
       name:
         description: A primary name, e.g. a legally recognized name
-        type:
-        - string
+        type: string
 # (6Aika note: superfluous finnish cities)
 #      other_names:
 #        description: Alternate or former names
@@ -383,45 +360,37 @@ definitions:
 #          $ref: '#/definitions/identifier'
       classification:
         description: An organization category, e.g. committee
-        type:
-        - string
+        type: string
       parent_id:
         description: The ID of the organization that contains this organization
-        type:
-        - string
+        type: string
       parent:
         description: The organization that contains this organization
         $ref: '#/definitions/Organization'
 # (6Aika note: ids are not used, references instead)
 #      area_id:
 #        description: The ID of the geographic area to which this organization is related
-#        type:
-#        - string
+#        type: string
       area:
         description: The geographic area to which this organization is related
         $ref: '#/definitions/Area'
       abstract:
         description: A one-line description of an organization
-        type:
-        - string
+        type: string
       description:
         description: An extended description of an organization
-        type:
-        - string
+        type: string
       founding_date:
         description: A date of founding
-        type:
-        - string
+        type: string
         format: date
       dissolution_date:
         description: A date of dissolution
-        type:
-        - string
+        type: string
         format: date
       image:
         description: A URL of an image
-        type:
-        - string
+        type: string
         format: uri
 # (6Aika note: removed contact details for now)
 #      contact_details:
@@ -469,13 +438,11 @@ definitions:
           $ref: '#/definitions/Organization'
       created_at:
         description: The time at which the resource was created
-        type:
-        - string
+        type: string
         format: date-time
       updated_at:
         description: The time at which the resource was last modified
-        type:
-        - string
+        type: string
         format: date-time
 # (6Aika note: no use case identified)
 #      sources:
@@ -492,67 +459,57 @@ definitions:
     properties:
       id:
         description: The membership's unique identifier
-        type:
-        - string
+        type: string
       label:
         description: A label describing the membership
-        type:
-        - string
+        type: string
       role:
         description: The role that the member fulfills in the organization
-        type:
-        - string
+        type: string
       member:
         description: The person or organization that is a member of the organization
         type:
         - object
       person_id:
         description: The ID of the person who is a member of the organization
-        type:
-        - string
+        type: string
       person:
         description: The person who is a member of the organization
         $ref: '#/definitions/Person'
 # (6Aika note: not used)
 #      organization_id:
 #        description: The ID of the organization in which the person or organization is a member
-#        type:
-#        - string
+#        type: string
       organization:
         description: The organization in which the person or organization is a member
         $ref: '#/definitions/Organization'
       post_id:
         description: The ID of the post held by the member in the organization through this membership
-        type:
-        - string
+        type: string
       post:
         description: The post held by the member in the organization through this membership
         $ref: '#/definitions/Post'
 # (6Aika note: not used)
 #      on_behalf_of_id:
 #        description: The ID of the organization on whose behalf the person is a member of the organization
-#        type:
-#        - string
+#        type: string
       on_behalf_of:
         description: The organization on whose behalf the person is a member of the organization
         $ref: '#/definitions/Organization'
 # (6Aika note: not needed for cities?)        
 #      area_id:
 #        description: The ID of the geographic area to which this membership is related
-#        type:
-#        - string
+#        type: string
 #      area:
 #        description: The geographic area to which this membership is related
 #        $ref: '#/definitions/Area'
       start_date:
         description: The date on which the relationship began
-        type:
-        - string
+        type: string
         format: date
       end_date:
         description: The date on which the relationship ended
-        type:
-        - string
+        type: string
         format: date
 # (6Aika note: left out for this version)
 #      contact_details:
@@ -568,13 +525,11 @@ definitions:
 #          $ref: '#/definitions/link'
       created_at:
         description: The time at which the resource was created
-        type:
-        - string
+        type: string
         format: date-time
       updated_at:
         description: The time at which the resource was last modified
-        type:
-        - string
+        type: string
         format: date-time
 # (&aika note: left out for this version)
 #      sources:
@@ -714,12 +669,10 @@ definitions:
     properties:
       id:
         description: The post's unique identifier
-        type:
-        - string
+        type: string
       label:
         description: A label describing the post
-        type:
-        - string
+        type: string
       other_label:
         description: An alternate label
         type: array
@@ -727,33 +680,28 @@ definitions:
           type: string
       role:
         description: The function that the holder of the post fulfills
-        type:
-        - string
+        type: string
 # (6Aika note: id is not used, only reference)
 #      organization_id:
 #        description: The ID of the organization in which the post is held
-#        type:
-#        - string
+#        type: string
       organization:
         description: The organization in which the post is held
         $ref: '#/definitions/Organization'
       area_id:
         description: The ID of the geographic area to which this post is related
-        type:
-        - string
+        type: string
 # (6Aika note: needs checking if the are posts with areas)
 #      area:
 #        description: The geographic area to which this post is related
 #        $ref: '#/definitions/Area'
       start_date:
         description: The date on which the post was created
-        type:
-        - string
+        type: string
         format: date
       end_date:
         description: The date on which the post was eliminated
-        type:
-        - string
+        type: string
         format: date
 # (6Aika note: not used for now)
 #      contact_details:
@@ -774,13 +722,11 @@ definitions:
           $ref: '#/definitions/Membership'
       created_at:
         description: The time at which the resource was created
-        type:
-        - string
+        type: string
         format: date-time
       updated_at:
         description: The time at which the resource was last modified
-        type:
-        - string
+        type: string
         format: date-time
 # (6Aika note: not used for now)
 #      sources:
@@ -797,24 +743,19 @@ definitions:
     properties:
       id:
         description: The area's unique identifier
-        type:
-        - string
+        type: string
       name:
         description: A primary name
-        type:
-        - string
+        type: string
       identifier:
         description: An issued identifier
-        type:
-        - string
+        type: string
       classification:
         description: An area category, e.g. city
-        type:
-        - string
+        type: string
       parent_id:
         description: The ID of the area that contains this area
-        type:
-        - string
+        type: string
       parent:
         description: The area that contains this area
         $ref: '#/definitions/Area'
@@ -847,13 +788,11 @@ definitions:
           $ref: '#/definitions/Area'
       created_at:
         description: The time at which the resource was created
-        type:
-        - string
+        type: string
         format: date-time
       updated_at:
         description: The time at which the resource was last modified
-        type:
-        - string
+        type: string
         format: date-time
 # (6Aika note: not used for now)
 #      sources:
