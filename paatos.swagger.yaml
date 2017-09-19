@@ -911,7 +911,7 @@ paths:
                 items:
                   $ref: '#/definitions/action'
       tags:
-      - cases
+      - actions
       parameters:
       - type: integer
         in: query
@@ -930,7 +930,7 @@ paths:
           schema:
             $ref: '#/definitions/action'
       tags:
-      - cases
+      - actions
       parameters:
       - name: id
         type: integer
@@ -956,6 +956,7 @@ paths:
                 items:
                   $ref: '#/definitions/Person'
       tags:
+      - persons
       - decision_makers
       parameters:
       - type: integer
@@ -975,6 +976,7 @@ paths:
           schema:
             $ref: '#/definitions/Person'
       tags:
+      - persons
       - decision_makers
       parameters:
       - name: id
@@ -1001,6 +1003,7 @@ paths:
                 items:
                  $ref: '#/definitions/Organization'
       tags:
+      - organizations
       - decision_makers
       parameters:
       - type: integer
@@ -1020,6 +1023,7 @@ paths:
           schema:
             $ref: '#/definitions/Organization'
       tags:
+      - organizations
       - decision_makers
       parameters:
       - name: id
@@ -1046,6 +1050,7 @@ paths:
                 items:
                  $ref: '#/definitions/Membership'
       tags:
+      - memberships
       - decision_makers
       parameters:
       - type: integer
@@ -1065,6 +1070,7 @@ paths:
           schema:
             $ref: '#/definitions/Membership'
       tags:
+      - memberships
       - decision_makers
       parameters:
       - name: id
@@ -1091,6 +1097,7 @@ paths:
                 items:
                  $ref: '#/definitions/Post'
       tags:
+      - posts
       - decision_makers
       parameters:
       - $ref: '#/parameters/pagesize_param'
@@ -1107,6 +1114,7 @@ paths:
           schema:
             $ref: '#/definitions/Post'
       tags:
+      - posts
       - decision_makers
       parameters:
       - name: id
