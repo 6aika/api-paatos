@@ -332,8 +332,7 @@ definitions:
         type: string
       group:
         description: A group of voters
-        type:
-        - object
+        type: object
 
   # this is derived from Popolo, converted to YAML and JSON Schema draft-04
   Organization:
@@ -468,8 +467,7 @@ definitions:
         type: string
       member:
         description: The person or organization that is a member of the organization
-        type:
-        - object
+        type: object
       person_id:
         description: The ID of the person who is a member of the organization
         type: string
@@ -761,8 +759,7 @@ definitions:
         $ref: '#/definitions/Area'
       geometry:
         description: A geometry
-        type:
-        - object
+        type: object
 # (6Aika note: leaving out areas related to memberships for now)
 #      memberships:
 #        description: The memberships to which this area is related
