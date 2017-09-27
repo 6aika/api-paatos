@@ -859,9 +859,16 @@ paths:
           schema:
             type: object
             properties:
-              meta:
-                $ref: '#/definitions/Meta'
-              objects:
+              count:
+                type: integer
+                description: Total items count for the all collection
+              next:
+                type: string
+                description: Uri of the next page relative to the current page settings.            
+              previous:
+                type: string
+                description: Uri of the previous page relative to the current page settings.
+              results:
                 type: array
                 items:
                   $ref: '#/definitions/case'
@@ -909,9 +916,16 @@ paths:
           schema:
             type: object
             properties:
-              meta:
-                $ref: '#/definitions/Meta'
-              objects:
+              count:
+                type: integer
+                description: Total items count for the all collection
+              next:
+                type: string
+                description: Uri of the next page relative to the current page settings.            
+              previous:
+                type: string
+                description: Uri of the previous page relative to the current page settings.
+              results:
                 type: array
                 items:
                   $ref: '#/definitions/action'
@@ -1006,12 +1020,19 @@ paths:
           schema:
             type: object
             properties:
-              meta:
-                $ref: '#/definitions/Meta'
-              objects:
+              count:
+                type: integer
+                description: Total items count for the all collection
+              next:
+                type: string
+                description: Uri of the next page relative to the current page settings.            
+              previous:
+                type: string
+                description: Uri of the previous page relative to the current page settings.
+              results:
                 type: array
                 items:
-                 $ref: '#/definitions/Organization'
+                  $ref: '#/definitions/Organization'
       tags:
       - organizations
       - decision_makers
@@ -1104,12 +1125,19 @@ paths:
           schema:
             type: object
             properties:
-              meta:
-                $ref: '#/definitions/Meta'
-              objects:
+              count:
+                type: integer
+                description: Total items count for the all collection
+              next:
+                type: string
+                description: Uri of the next page relative to the current page settings.            
+              previous:
+                type: string
+                description: Uri of the previous page relative to the current page settings.
+              results:
                 type: array
                 items:
-                 $ref: '#/definitions/Post'
+                  $ref: '#/definitions/Post'
       tags:
       - posts
       - decision_makers
