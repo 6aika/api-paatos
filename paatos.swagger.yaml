@@ -897,8 +897,8 @@ paths:
   /case/{id}/:
     x-swagger-router-controller: cases
     get:
-      summary: Retrieve a single case video by ID
-      operationId: video_detail
+      summary: Retrieve a single case by ID
+      operationId: cases_retrieve
       responses:
         200:
           description: A single case record
@@ -954,7 +954,7 @@ paths:
   /action/{id}/:
     x-swagger-router-controller: actions
     get:
-      summary: Retrieve a single video by ID
+      summary: Retrieve a single action by ID
       operationId: actions_retrieve
       responses:
         200:
