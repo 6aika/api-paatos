@@ -818,6 +818,42 @@ definitions:
         description: URL pointing the attached file
         type: string
         format: url
+  
+  function:
+    title: Function
+    description: A function
+    type: object
+    properties:
+      url:
+        description: The function's url
+        type: string
+      id:
+        description: The function's unique identifier
+        type: number
+        format: int64
+      data_source:
+        description: The function's data source
+        type: string
+      created_at:
+        description: The time at which the resource was created
+        type: string
+        format: date-time
+      modified_at:
+        description: The time at which the resource was last modified
+        type: string
+        format: date-time
+      origin_id:
+        description: The function's origin id
+        type: string
+      name:
+        description: The function's name
+        type: string
+      function_id:
+        description: The actual function id
+        type: string
+      parent:
+        description: URL to parent function
+        type: string
         
 paths:
   /case/:
@@ -1192,6 +1228,63 @@ paths:
             $ref: '#/definitions/Event'
       tags:
       - events
+      parameters:
+      - name: id
+        type: integer
+        in: path
+        required: true
+        description: Primary key of resource
+
+  /function/:
+    x-swagger-router-controller: functions
+    get:
+      summary: Retrieve a list of functions
+      operationId: functions_list
+      responses:
+        200:
+          description: List of functions
+          schema:
+            type: object
+            properties:
+              count:
+                type: integer
+                description: Total items count for the all collection
+              next:
+                type: string
+                description: Uri of the next page relative to the current page settings.            
+              previous:
+                type: string
+                description: Uri of the previous page relative to the current page settings.
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/function'
+      tags:
+      - functions
+      parameters:
+      - type: integer
+        in: query
+        required: false
+        name: limit
+        description: Specify the number of element to display per page.
+      - type: integer
+        in: query
+        required: false
+        name: offset
+        description: Specify the offset to start displaying element on a page.
+        
+  /function/{id}/:
+    x-swagger-router-controller: functions
+    get:
+      summary: Retrieve a single function by ID
+      operationId: functions_retrieve
+      responses:
+        200:
+          description: A single function record
+          schema:
+            $ref: '#/definitions/function'
+      tags:
+      - functions
       parameters:
       - name: id
         type: integer
