@@ -178,74 +178,46 @@ definitions:
     description: An occurrence that people may attend
     type: object
     properties:
+      url:
+        description: The event's url
+        type: string
       id:
         description: The event's unique identifier
+        type: number
+        format: int64
+      data_source:
+        description: The event's data source
         type: string
-      name:
-        description: The event's name
-        type: string
-      description:
-        description: The event's description
-        type: string
-      start_date:
-        description: The time at which the event starts
-        type: string
-        format: date-time
-      end_date:
-        description: The time at which the event ends
-        type: string
-        format: data-time
-      location:
-        description: The event's location
-        type: string
-      status:
-        description: The event's status
-        type: string
-# (6Aika note: not used)
-#      identifiers:
-#        description: Issued identifiers
-#        type: array
-#        items:
-#          $ref: '#/definitions/identifier'
-      classification:
-        description: The event's category
-        type: string
-      organization_id:
-        description: The ID of the organization organizing the event
-        type: string
-      organization:
-        description: The organization organizing the event
-        $ref: '#/definitions/Organization'
-      attendees:
-        description: People attending the event
+      actions:
+        description: The evvent's actions
         type: array
         items:
-          $ref: '#/definitions/Person'
-      parent_id:
-        description: The ID of an event that this event is a part of
-        type: string
-# (6Aika note: event parents and children not used)
-#      parent:
-#        description: An event that this event is a part of
-#        $ref: '#/definitions/Event'
-#      children:
-#        description: The sub-events of the event
-#        type: array
-#        items:
-#          $ref: '#/definitions/Event'
+          type: string
       created_at:
         description: The time at which the resource was created
         type: string
         format: date-time
-      updated_at:
+      modified_at:
         description: The time at which the resource was last modified
         type: string
         format: date-time
-#      sources:
-#        description: URLs to documents from which the resource is derived
-#        type: array
-#        items:
-#          $ref: '#/definitions/link'
+      origin_id:
+        description: The event's origin id
+        type: string
+      name:
+        description: The event's name
+        type: string
+      start_date:
+        description: The time at which the event starts
+        type: string
+        format: date
+      end_date:
+        description: The time at which the event ends
+        type: string
+        format: date
+      organization:
+        description: The url of the organization organizing the event
+        type: string
 
   # this is derived from Popolo, converted to YAML and JSON Schema draft-04
   Vote_event:
@@ -1158,6 +1130,68 @@ paths:
       tags:
       - posts
       - decision_makers
+      parameters:
+      - name: id
+        type: integer
+        in: path
+        required: true
+        description: Primary key of resource
+
+  /event/:
+    x-swagger-router-controller: events
+    get:
+      summary: Retrieve a list of events
+      operationId: events_list
+      responses:
+        200:
+          description: List of events
+          schema:
+            type: object
+            properties:
+              count:
+                type: integer
+                description: Total items count for the all collection
+              next:
+                type: string
+                description: Uri of the next page relative to the current page settings.            
+              previous:
+                type: string
+                description: Uri of the previous page relative to the current page settings.
+              results:
+                type: array
+                items:
+                  $ref: '#/definitions/Event'
+      tags:
+      - events
+      parameters:
+      - type: integer
+        in: query
+        required: false
+        name: limit
+        description: Specify the number of element to display per page.
+      - type: integer
+        in: query
+        required: false
+        name: offset
+        description: Specify the offset to start displaying element on a page.
+      - type: integer
+        in: query
+        required: false
+        name: organization
+        description: Filter by organization id
+        
+  /event/{id}/:
+    x-swagger-router-controller: events
+    get:
+      summary: Retrieve a single event by ID
+      operationId: events_retrieve
+      responses:
+        200:
+          description: A single event record
+          schema:
+            $ref: '#/definitions/Event'
+      tags:
+      - events
       parameters:
       - name: id
         type: integer
