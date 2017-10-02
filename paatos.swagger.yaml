@@ -58,118 +58,109 @@ definitions:
     title: 'High level matter to be decided ("Asia")'
     description: 'A matter being decided withing the organization. These are often considered across multiple meetings and possibly across multiple decision makers. Cases can also be related to other cases, forming more complex structures. All that said, it is not unusual for a case to involve only a single action. Previous version used *issue* as similar concept, without interlinking.'
     properties:
+      url:
+        description: The case's url
+        type: string
+      id:
+        description: The case's unique identifier
+        type: number
+        format: int64
+      data_source:
+        description: The case's data source
+        type: string
+      actions:
+        description: Array of urls to actions
+        type: array
+        items:
+          type: string
+      geometries:
+        description: Array of geometries
+        type: array
+        items:
+          $ref: '#/definitions/geometry'
+      created_at:
+        description: The time at which the resource was created
+        type: string
+        format: date-time
+      modified_at:
+        description: The time at which the resource was last modified
+        type: string
+        format: date-time
+      origin_id:
+        description: The event's origin id
+        type: string
       title:
-        type: object
-        description: 'Descriptive compact title for this case'
-        properties:
-          fi:
-            type: string
-            description: Finnish title
-          sv:
-            type: string
-            description: Swedish title
-        # Format title would be a field for titles that have to follow a form that makes them hard to understand
-        #formal_title:
-        #type: object
-        #description: 'Formal title for this case. This can be longer and more detailed.'
-        #properties:
-        # fi:
-        #   type: string
-        #   description: Finnish title
-        # sv:
-        #   type: string
-        #   description: Swedish title
-      summary:
-        type: object
-        description: Summary of this case. Typically a few sentences.
-        properties:
-          fi:
-            type: string
-            description: Finnish summary
-          sv:
-            type: string
-            description: Swedish summary
+        description: Title of the case
+        type: string
+      register_id:
+        description: Register id for this case
+        type: string
+      function:
+        description: Function url for this case
+        type: string
       attachments:
-        description: Attachments related to this case
+        description: Array of attachments
         type: array
         items:
           $ref: '#/definitions/attachment'
-      category:
-        type: string
-        description: 'Category this case belongs to ("tehtäväluokka")'
-      area:
-        description: Geographic areas this case is related to
-        type: array
-        items:
-          $ref: '#/definitions/Area'
-      # It might be possible to express district using Area
-      district:
-        type: string
-        description: 'Name of district (if any), that this issue is related to.'
-      category_id:
-        type: string
-        description: 'Identifier code for the category, if applicable. In finland this could be the national "Tehtäväluokitus"'
-      related_cases:
-        description: Other cases that are related to this case
-        type: array
-        items:
-          type: object
-          properties:
-            case:
-              $ref: '#/definitions/case'
-            relation_type:
-              type: string
-              description: Type of this relation (previous, similar etc.)
-      # This needs to be rethought, if this field is to link to another data structure.
-      # In that case the result must be of single type (not person or organization)
-      originator:
-        description: Person or organization the proposed this case to the city
-        type: string
-      creation_date:
-        description: Date this case was entered into system
-        type: string
-        format: date-time
-      # Non-public cases might be shown, but with all fields blanked
-      public:
-        description: Is this case public?
-        type: boolean
         
   action:
     type: object
     title: An action taken by a decision maker.
     description: 'An action taken by a decision maker. Except for formalities (like quorum), these always involve a case and a decision by an organization or post, even if only postponing the decision. For decision making bodies, actions are always taken in context of a meeting. For officials, some cities also publish their decisions as being done in a meeting, although there is only one person present.'
-    properties: 
-      id:
-        description: Unique identifier for this action
+    properties:
+      url:
+        description: The action's url
         type: string
-        format: semantic-iri
+      id:
+        description: The action's unique identifier
+        type: number
+        format: int64
+      data_source:
+        description: The action's data source
+        type: string
+      contents:
+        description: Array of contents
+        type: array
+        items:
+          $ref: '#/definitions/content'
+      attachments:
+        description: Array of attachments
+        type: array
+        items:
+          $ref: '#/definitions/attachment'
+      created_at:
+        description: The time at which the resource was created
+        type: string
+        format: date-time
+      modified_at:
+        description: The time at which the resource was last modified
+        type: string
+        format: date-time
+      origin_id:
+        description: The event's origin id
+        type: string
       title:
         description: Title of the action
         type: string
-      case:
-        description: Case this action is related to
-        $ref: '#/definitions/case'
       ordering:
         description: Ordering of this action within a meeting (or possibly arbitrary ordering)
         type: integer
       article_number:
         description: The article number given to this action after decision, will be null before decision
         type: string
-      proposal_identifier:
-        description: Identifier for this action used inside the meeting minutes. The format will vary between cities.
-      responsible_party:
-        description: The city organization responsible for this decision. If decision is delegated, this is the organization that delegated the authority.
-        $ref: '#/definitions/Organization'
-      delegate_post:
-        description: If this decision was delegated, this field will be filled and refers to the post that made the decision
-        $ref: '#/definitions/Post'
-      content:
-        $ref: '#/definitions/content'
-      votes:
-        description: Votes taken during this action.
-        type: array
-        items:
-          $ref: '#/definitions/Vote_event'
+      resolution:
+        description: Action's resolution
+        type: string
+      case:
+        description: Case url this action is related to
+        type: string
+      post:
+        description: Post url
+        type: string
+      event:
+        description: Event url this action is related to
+        type: string
 
   # this is derived from Popolo, converted to YAML and JSON Schema draft-04
   # Event is to be used for meetings and also votes within actions
@@ -312,115 +303,54 @@ definitions:
     description: A group with a common purpose or reason for existence that goes beyond the set of people belonging to it
     type: object
     properties:
+      url:
+        description: The organization's url
+        type: string
       id:
         description: The organization's unique identifier
+        type: number
+        format: int64
+      data_source:
+        description: The organization's data source
         type: string
-      name:
-        description: A primary name, e.g. a legally recognized name
-        type: string
-# (6Aika note: superfluous finnish cities)
-#      other_names:
-#        description: Alternate or former names
-#        type: array
-#        items:
-#          $ref: '#/definitions/other_name'
-#      identifiers:
-#        description: Issued identifiers
-#        type: array
-#        items:
-#          $ref: '#/definitions/identifier'
-      classification:
-        description: An organization category, e.g. committee
-        type: string
-      parent_id:
-        description: The ID of the organization that contains this organization
-        type: string
-      parent:
-        description: The organization that contains this organization
-        $ref: '#/definitions/Organization'
-# (6Aika note: ids are not used, references instead)
-#      area_id:
-#        description: The ID of the geographic area to which this organization is related
-#        type: string
-      area:
-        description: The geographic area to which this organization is related
-        $ref: '#/definitions/Area'
-      abstract:
-        description: A one-line description of an organization
-        type: string
-      description:
-        description: An extended description of an organization
-        type: string
-      founding_date:
-        description: A date of founding
-        type: string
-        format: date
-      dissolution_date:
-        description: A date of dissolution
-        type: string
-        format: date
-      image:
-        description: A URL of an image
-        type: string
-        format: uri
-# (6Aika note: removed contact details for now)
-#      contact_details:
-#        description: Means of contacting the organization
-#        type: array
-#        items:
-#          $ref: '#/definitions/contact_detail'
-# (6Aika note: removed links for now)
-#      links:
-#        description: URLs to documents about the organization
-#        type: array
-#        items:
-#          $ref: '#/definitions/link'
-      memberships:
-        description: The memberships of the members of the organization and of the organization itself
+      events:
+        description: The organization's events
         type: array
         items:
-          $ref: '#/definitions/Membership'
+          type: string
       posts:
-        description: Posts within the organization
+        description: The organization's posts
         type: array
         items:
-          $ref: '#/definitions/Post'
-# (6Aika note: motions are not included)
-#      motions:
-#        description: Motions within the organization
-#        type: array
-#        items:
-#          $ref: '#/definitions/Motion'
-      vote_events:
-        description: Vote events in which members of the organization are voting
-        type: array
-        items:
-          $ref: '#/definitions/Vote_event'
-# (6Aika note: individual votes not included yet)
-#      votes:
-#        description: Votes cast by the organization
-#        type: array
-#        items:
-#          $ref: '#/definitions/Vote'
-      children:
-        description: The sub-organizations of the organization
-        type: array
-        items:
-          $ref: '#/definitions/Organization'
+          type: string
       created_at:
         description: The time at which the resource was created
         type: string
         format: date-time
-      updated_at:
+      modified_at:
         description: The time at which the resource was last modified
         type: string
         format: date-time
-# (6Aika note: no use case identified)
-#      sources:
-#        description: URLs to documents from which the resource is derived
-#        type: array
-#        items:
-#          "$ref": '#/definitions/link'
+      origin_id:
+        description: The organization's origin id
+        type: string
+      classification:
+        description: The organization's classification
+        type: string
+      name:
+        description: The organization's name
+        type: string
+      founding_date:
+        description: The time at which the organization was founded
+        type: string
+        format: date
+      dissolution_date:
+        description: The time at which the organization was dissolved
+        type: string
+        format: date
+      parent:
+        description: The url of the organization's parent organization
+        type: string
 
   # this is derived from Popolo, converted to YAML and JSON Schema draft-04
   Membership:
@@ -775,49 +705,65 @@ definitions:
     title: Text contents for actions and cases
     description: Content objects contain the text describing actions takens on cases and the cases themselves. They consist of metadata and the actual content as HTML-formatted text.
     properties:
-      id:
-        description: Unique identifier for this piece of content. Formatted as IRI, composed of semantic namespace prefix and the identifier itself at end.
+      data_source:
+        description: The content's data source
         type: string
-        format: semantic-iri
+      created_at:
+        description: The time at which the resource was created
+        type: string
+        format: date-time
+      modified_at:
+        description: The time at which the resource was last modified
+        type: string
+        format: date-time
+      origin_id:
+        description: The content's origin id
+        type: string
       ordering:
         description: Ordering of this content within the larger context
         type: integer
       title:
-        description: Title for this content
+        description: The content's title
         type: string
       type:
-        description: 'Type of this content (options include: decision, proposal, proceedings...)'
+        description: The content's type
         type: string
       hypertext:
-        type: object
         description: 'Content formatted with pseudo-HTML. Only a very restricted set of tags is allowed. These are: first and second level headings (P+H1+H2) and table (more may be added, but start from a minimal set)'
-        properties:
-          fi:
-            type: string
-            format: html
-            description: Finnish version of the hypertext
-          sv:
-            type: string
-            format: html
-            description: Swedish version of the hypertext
-          en:
-            type: string
-            format: html
-            description: English version of the hypertext
-            
+        type: string
+        
   attachment:
     type: object
     title: File attachment related to an action or a case
     description: Both actions and cases can have related attachments. Usually, the attachments are accumulated in the case and also referenced in the action that attached them to the case.
     properties:
-      id:
-        description: Unique identifier for this attachment. Formatted as IRI, composed of semantic namespace prefix and the identifier itself at end.
-        type: string
-        format: semantic-iri
-      file:
+      url:
         description: URL pointing the attached file
         type: string
         format: url
+      data_source:
+        description: The attachment's data source
+        type: string
+      created_at:
+        description: The time at which the resource was created
+        type: string
+        format: date-time
+      modified_at:
+        description: The time at which the resource was last modified
+        type: string
+        format: date-time
+      origin_id:
+        description: The attachment's origin id
+        type: string
+      name:
+        description: The attachment's name
+        type: string
+      public: 
+        description: Is the attachment public
+        type: boolean
+      confidentiality_reason:
+        description: The attachment's confidentiality reason
+        type: string
   
   function:
     title: Function
@@ -855,6 +801,43 @@ definitions:
         description: URL to parent function
         type: string
         
+  geometry:
+    type: object
+    title: Geometry object
+    description: Single geometry object
+    properties:
+      data_source:
+        description: The geometry's data source
+        type: string
+      created_at:
+        description: The time at which the resource was created
+        type: string
+        format: date-time
+      modified_at:
+        description: The time at which the resource was last modified
+        type: string
+        format: date-time
+      origin_id:
+        description: The geometry's origin id
+        type: string
+      name:
+        description: The geometry's name
+        type: string
+      type:
+        description: The geometry's type
+        type: string
+      geometry:
+        type: object
+        properties:
+          type:
+            description: Type
+            type: string
+          coordinates:
+            description: Array of GEO JSON coordinates
+            type: array
+            items:
+              type: object
+              
 paths:
   /case/:
     x-swagger-router-controller: cases
